@@ -1,0 +1,1181 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Singapore Worker Support Bot</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .chatbot-container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 400px;
+            height: 600px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .chatbot-header {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a52);
+            color: white;
+            padding: 20px;
+            text-align: center;
+            position: relative;
+        }
+
+        .chatbot-header h2 {
+            font-size: 1.2em;
+            margin-bottom: 5px;
+        }
+
+        .chatbot-header p {
+            font-size: 0.9em;
+            opacity: 0.9;
+        }
+
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            background: #f8f9fa;
+        }
+
+        .message {
+            margin-bottom: 15px;
+            animation: fadeIn 0.3s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .bot-message {
+            display: flex;
+            align-items: flex-start;
+        }
+
+        .bot-avatar {
+            width: 35px;
+            height: 35px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            margin-right: 10px;
+            flex-shrink: 0;
+        }
+
+        .bot-text {
+            background: white;
+            padding: 12px 16px;
+            border-radius: 18px 18px 18px 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            max-width: 85%;
+            line-height: 1.4;
+            font-size: 13px;
+        }
+
+        .user-message {
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .user-text {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 12px 16px;
+            border-radius: 18px 18px 5px 18px;
+            max-width: 80%;
+            line-height: 1.4;
+        }
+
+        .input-container {
+            padding: 20px;
+            background: white;
+            border-top: 1px solid #eee;
+        }
+
+        .input-row {
+            display: flex;
+            gap: 10px;
+        }
+
+        .chat-input {
+            flex: 1;
+            border: 2px solid #e1e5e9;
+            border-radius: 25px;
+            padding: 12px 20px;
+            font-size: 14px;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        .chat-input:focus {
+            border-color: #667eea;
+        }
+
+        .send-button {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 45px;
+            height: 45px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.2s;
+        }
+
+        .send-button:hover {
+            transform: scale(1.05);
+        }
+
+        .send-button:active {
+            transform: scale(0.95);
+        }
+
+        .quick-options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .quick-option {
+            background: #e3f2fd;
+            color: #1976d2;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.3s;
+        }
+
+        .quick-option:hover {
+            background: #bbdefb;
+            transform: translateY(-1px);
+        }
+
+        .language-option {
+            background: #f3e5f5;
+            color: #7b1fa2;
+        }
+
+        .language-option:hover {
+            background: #e1bee7;
+        }
+
+        .typing-indicator {
+            display: none;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .typing-dots {
+            display: flex;
+            gap: 4px;
+            margin-left: 45px;
+        }
+
+        .typing-dot {
+            width: 8px;
+            height: 8px;
+            background: #999;
+            border-radius: 50%;
+            animation: typing 1.4s infinite;
+        }
+
+        .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+        .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+
+        @keyframes typing {
+            0%, 60%, 100% { transform: translateY(0); }
+            30% { transform: translateY(-10px); }
+        }
+
+        .service-card {
+            background: #f8fffe;
+            border: 1px solid #b2dfdb;
+            border-radius: 12px;
+            padding: 14px;
+            margin: 8px 0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .service-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .service-icon {
+            font-size: 18px;
+            margin-right: 8px;
+        }
+
+        .service-title {
+            font-weight: bold;
+            color: #00695c;
+            font-size: 14px;
+        }
+
+        .service-details {
+            font-size: 11px;
+            color: #37474f;
+            line-height: 1.4;
+        }
+
+        .contact-info {
+            background: #e8f5e8;
+            padding: 8px;
+            border-radius: 8px;
+            margin-top: 8px;
+            font-size: 10px;
+        }
+
+        .contact-item {
+            margin: 2px 0;
+            display: flex;
+            align-items: center;
+        }
+
+        .contact-icon {
+            margin-right: 5px;
+            width: 12px;
+        }
+
+        .subcategory-card {
+            background: #fff3e0;
+            border: 1px solid #ffcc02;
+            border-radius: 10px;
+            padding: 10px;
+            margin: 5px 0;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .subcategory-card:hover {
+            background: #ffe0b2;
+            transform: translateY(-1px);
+        }
+
+        .subcategory-title {
+            font-weight: bold;
+            color: #e65100;
+            font-size: 12px;
+            margin-bottom: 4px;
+        }
+
+        .subcategory-desc {
+            font-size: 10px;
+            color: #bf360c;
+        }
+
+        .back-button {
+            background: #ffecb3;
+            color: #ff6f00;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 15px;
+            cursor: pointer;
+            font-size: 11px;
+            margin: 5px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="chatbot-container">
+        <div class="chatbot-header">
+            <h2 id="headerTitle">Singapore Migrant Worker Support</h2>
+            <p id="headerSubtitle">Your guide to affordable services & housing</p>
+        </div>
+
+        <div class="chat-messages" id="chatMessages">
+            <div class="message bot-message">
+                <div class="bot-avatar">🏠</div>
+                <div class="bot-text" id="welcomeMessage">
+                    Welcome! I'm here to help you find affordable housing, healthcare, and other essential services in Singapore. Let's start by getting to know you better.
+                </div>
+            </div>
+        </div>
+
+        <div class="typing-indicator" id="typingIndicator">
+            <div class="typing-dots">
+                <div class="typing-dot"></div>
+                <div class="typing-dot"></div>
+                <div class="typing-dot"></div>
+            </div>
+        </div>
+
+        <div class="input-container">
+            <div class="input-row">
+                <input type="text" class="chat-input" id="chatInput" placeholder="Type your message...">
+                <button class="send-button" id="sendButton">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M2 21l21-9L2 3v7l15 2-15 2v7z"/>
+                    </svg>
+                </button>
+            </div>
+            <div class="quick-options" id="quickOptions"></div>
+        </div>
+    </div>
+
+    <script>
+        class MigrantWorkerChatbot {
+            constructor() {
+                this.currentLanguage = 'en';
+                this.conversationState = 'welcome';
+                this.userProfile = {};
+                this.currentCategory = null;
+                this.translations = {
+                    en: {
+                        headerTitle: "Singapore Migrant Worker Support",
+                        headerSubtitle: "Your guide to affordable services & housing",
+                        welcomeMessage: "Welcome! I'm here to help you find affordable housing, healthcare, and other essential services in Singapore. Let's start by getting to know you better.",
+                        inputPlaceholder: "Type your message...",
+                        nameQuestion: "What's your name?",
+                        nationalityQuestion: "What's your nationality?",
+                        workTypeQuestion: "What type of work do you do?",
+                        budgetQuestion: "What's your monthly budget for accommodation?",
+                        servicesQuestion: "What services do you need help with?",
+                        languageQuestion: "First, please select your preferred language:",
+                        healthcareOption: "🏥 Healthcare Services",
+                        housingOption: "🏠 Housing & Accommodation", 
+                        groceriesOption: "🛒 Groceries & Food",
+                        legalOption: "⚖️ Legal Aid",
+                        socialOption: "👥 Social Life & Community",
+                        financialOption: "💰 Financial Services",
+                        emergencyOption: "🚨 Emergency Help",
+                        backToServices: "← Back to Services",
+                        changeLanguage: "🌐 Change Language"
+                    },
+                    zh: {
+                        headerTitle: "新加坡工人支援",
+                        headerSubtitle: "您的经济实惠服务和住房指南",
+                        welcomeMessage: "欢迎！我在这里帮助您在新加坡找到经济实惠的住房、医疗保健和其他基本服务。让我们先了解一下您。",
+                        inputPlaceholder: "输入您的消息...",
+                        nameQuestion: "您的姓名是什么？",
+                        nationalityQuestion: "您的国籍是什么？",
+                        workTypeQuestion: "您从事什么类型的工作？",
+                        budgetQuestion: "您每月的住宿预算是多少？",
+                        servicesQuestion: "您需要什么服务帮助？",
+                        languageQuestion: "首先，请选择您的首选语言：",
+                        healthcareOption: "🏥 医疗服务",
+                        housingOption: "🏠 住房和住宿",
+                        groceriesOption: "🛒 杂货和食品",
+                        legalOption: "⚖️ 法律援助",
+                        socialOption: "👥 社交生活和社区",
+                        financialOption: "💰 金融服务",
+                        emergencyOption: "🚨 紧急帮助",
+                        backToServices: "← 返回服务",
+                        changeLanguage: "🌐 更改语言"
+                    },
+                    ta: {
+                        headerTitle: "சிங்கப்பூர் தொழிலாளர் ஆதரவு",
+                        headerSubtitle: "மலிவான சேவைகள் மற்றும் வீடுகளுக்கான உங்கள் வழிகாட்டி",
+                        welcomeMessage: "வரவேற்கிறோம்! சிங்கப்பூரில் மலிவான வீடு, சுகாதாரம் மற்றும் பிற அத்தியாவசிய சேவைகளைக் கண்டறிய நான் இங்கே இருக்கிறேன். முதலில் உங்களைப் பற்றி தெரிந்துகொள்வோம்.",
+                        inputPlaceholder: "உங்கள் செய்தியை தட்டச்சு செய்யுங்கள்...",
+                        nameQuestion: "உங்கள் பெயர் என்ன?",
+                        nationalityQuestion: "உங்கள் தேசியம் என்ன?",
+                        workTypeQuestion: "நீங்கள் என்ன வகையான வேலை செய்கிறீர்கள்?",
+                        budgetQuestion: "தங்குமிடத்திற்கான உங்கள் மாதாந்திர பட்ஜெட் என்ன?",
+                        servicesQuestion: "எந்த சேவைகளுக்கு உதவி தேவை?",
+                        languageQuestion: "முதலில், உங்கள் விருப்பமான மொழியைத் தேர்ந்தெடுக்கவும்:",
+                        healthcareOption: "🏥 சுகாதார சேவைகள்",
+                        housingOption: "🏠 வீடு மற்றும் தங்குமிடம்",
+                        groceriesOption: "🛒 உணவுப் பொருட்கள்",
+                        legalOption: "⚖️ சட்ட உதவி",
+                        socialOption: "👥 சமூக வாழ்க்கை",
+                        financialOption: "💰 நிதி சேவைகள்",
+                        emergencyOption: "🚨 அவசர உதவி",
+                        backToServices: "← சேவைகளுக்குத் திரும்பு",
+                        changeLanguage: "🌐 மொழியை மாற்று"
+                    },
+                    hi: {
+                        headerTitle: "सिंगापुर कार्यकर्ता सहायता",
+                        headerSubtitle: "किफायती सेवाओं और आवास के लिए आपका गाइड",
+                        welcomeMessage: "स्वागत है! मैं यहाँ आपको सिंगापुर में किफायती आवास, स्वास्थ्य सेवा और अन्य आवश्यक सेवाएं खोजने में मदद करने के लिए हूँ। आइए पहले आपको जानते हैं।",
+                        inputPlaceholder: "अपना संदेश टाइप करें...",
+                        nameQuestion: "आपका नाम क्या है?",
+                        nationalityQuestion: "आपकी राष्ट्रीयता क्या है?",
+                        workTypeQuestion: "आप किस प्रकार का काम करते हैं?",
+                        budgetQuestion: "आवास के लिए आपका मासिक बजट क्या है?",
+                        servicesQuestion: "आपको किन सेवाओं में मदद चाहिए?",
+                        languageQuestion: "पहले, कृपया अपनी पसंदीदा भाषा चुनें:",
+                        healthcareOption: "🏥 स्वास्थ्य सेवाएं",
+                        housingOption: "🏠 आवास और निवास",
+                        groceriesOption: "🛒 किराना और भोजन",
+                        legalOption: "⚖️ कानूनी सहायता",
+                        socialOption: "👥 सामाजिक जीवन",
+                        financialOption: "💰 वित्तीय सेवाएं",
+                        emergencyOption: "🚨 आपातकालीन सहायता",
+                        backToServices: "← सेवाओं पर वापस जाएं",
+                        changeLanguage: "🌐 भाषा बदलें"
+                    },
+                    bn: {
+                        headerTitle: "সিঙ্গাপুর শ্রমিক সহায়তা",
+                        headerSubtitle: "সাশ্রয়ী সেবা এবং আবাসনের জন্য আপনার গাইড",
+                        welcomeMessage: "স্বাগতম! আমি এখানে আপনাকে সিঙ্গাপুরে সাশ্রয়ী আবাসন, স্বাস্থ্যসেবা এবং অন্যান্য প্রয়োজনীয় সেবা খুঁজে পেতে সাহায্য করতে এসেছি। আসুন প্রথমে আপনার সম্পর্কে জানি।",
+                        inputPlaceholder: "আপনার বার্তা টাইপ করুন...",
+                        nameQuestion: "আপনার নাম কি?",
+                        nationalityQuestion: "আপনার জাতীয়তা কি?",
+                        workTypeQuestion: "আপনি কি ধরনের কাজ করেন?",
+                        budgetQuestion: "আবাসনের জন্য আপনার মাসিক বাজেট কত?",
+                        servicesQuestion: "আপনার কোন সেবায় সাহায্য দরকার?",
+                        languageQuestion: "প্রথমে, আপনার পছন্দের ভাষা নির্বাচন করুন:",
+                        healthcareOption: "🏥 স্বাস্থ্যসেবা",
+                        housingOption: "🏠 আবাসন এবং বাসস্থান",
+                        groceriesOption: "🛒 খাদ্যদ্রব্য",
+                        legalOption: "⚖️ আইনি সহায়তা",
+                        socialOption: "👥 সামাজিক জীবন",
+                        financialOption: "💰 আর্থিক সেবা",
+                        emergencyOption: "🚨 জরুরি সাহায্য",
+                        backToServices: "← সেবাসমূহে ফিরে যান",
+                        changeLanguage: "🌐 ভাষা পরিবর্তন করুন"
+                    },
+                    id: {
+                        headerTitle: "Dukungan Pekerja Singapura",
+                        headerSubtitle: "Panduan Anda untuk layanan dan perumahan terjangkau",
+                        welcomeMessage: "Selamat datang! Saya di sini untuk membantu Anda menemukan perumahan, layanan kesehatan, dan layanan penting lainnya yang terjangkau di Singapura. Mari kita mulai dengan mengenal Anda lebih baik.",
+                        inputPlaceholder: "Ketik pesan Anda...",
+                        nameQuestion: "Siapa nama Anda?",
+                        nationalityQuestion: "Apa kebangsaan Anda?",
+                        workTypeQuestion: "Jenis pekerjaan apa yang Anda lakukan?",
+                        budgetQuestion: "Berapa anggaran bulanan Anda untuk akomodasi?",
+                        servicesQuestion: "Layanan apa yang Anda butuhkan bantuan?",
+                        languageQuestion: "Pertama, silakan pilih bahasa pilihan Anda:",
+                        healthcareOption: "🏥 Layanan Kesehatan",
+                        housingOption: "🏠 Perumahan & Akomodasi",
+                        groceriesOption: "🛒 Bahan Makanan",
+                        legalOption: "⚖️ Bantuan Hukum",
+                        socialOption: "👥 Kehidupan Sosial",
+                        financialOption: "💰 Layanan Keuangan",
+                        emergencyOption: "🚨 Bantuan Darurat",
+                        backToServices: "← Kembali ke Layanan",
+                        changeLanguage: "🌐 Ubah Bahasa"
+                    }
+                };
+                
+                // Comprehensive service database - EASY TO EXTEND
+                this.serviceDatabase = {
+                    healthcare: {
+                        title: "Healthcare Services",
+                        icon: "🏥",
+                        subcategories: {
+                            mental_health: {
+                                title: "Mental Health",
+                                icon: "🧠",
+                                services: [
+                                    {
+                                        name: "Institute of Mental Health (IMH)",
+                                        description: "24/7 mental health emergency services and counseling",
+                                        website: "https://www.imh.com.sg",
+                                        phone: "6389-2200",
+                                        emergency: "6389-2222",
+                                        address: "10 Buangkok View, Singapore 539747",
+                                        hours: "24/7 Emergency, 8:30AM-5:30PM Outpatient",
+                                        cost: "Subsidized rates available"
+                                    },
+                                    {
+                                        name: "Samaritans of Singapore (SOS)",
+                                        description: "Free confidential emotional support helpline",
+                                        website: "https://www.sos.org.sg",
+                                        phone: "1767 (24/7 Hotline)",
+                                        email: "pat@sos.org.sg",
+                                        address: "Multiple locations",
+                                        hours: "24/7",
+                                        cost: "Free"
+                                    }
+                                ]
+                            },
+                            eyecare: {
+                                title: "Eye Care",
+                                icon: "👁️",
+                                services: [
+                                    {
+                                        name: "Singapore National Eye Centre",
+                                        description: "Comprehensive eye care and surgery",
+                                        website: "https://www.snec.com.sg",
+                                        phone: "6227-7266",
+                                        appointment: "https://www.snec.com.sg/patient-care/appointments",
+                                        address: "11 Third Hospital Avenue, Singapore 168751",
+                                        hours: "Mon-Fri 8:00AM-5:30PM",
+                                        cost: "Subsidized rates for citizens/PR"
+                                    },
+                                    {
+                                        name: "Polyclinic Eye Screening",
+                                        description: "Basic eye tests and screening",
+                                        website: "https://www.healthhub.sg",
+                                        phone: "6355-3000",
+                                        address: "Multiple polyclinic locations",
+                                        hours: "Varies by location",
+                                        cost: "$10.50 - $13.50"
+                                    }
+                                ]
+                            },
+                            dental: {
+                                title: "Dental Health",
+                                icon: "🦷",
+                                services: [
+                                    {
+                                        name: "National Dental Centre Singapore",
+                                        description: "Comprehensive dental care and specialist treatments",
+                                        website: "https://www.ndcs.com.sg",
+                                        phone: "6324-8800",
+                                        appointment: "https://www.ndcs.com.sg/patient-care/appointments",
+                                        address: "5 Second Hospital Avenue, Singapore 168938",
+                                        hours: "Mon-Fri 8:00AM-5:30PM",
+                                        cost: "Subsidized rates available"
+                                    },
+                                    {
+                                        name: "Polyclinic Dental Services",
+                                        description: "Basic dental care and treatments",
+                                        website: "https://www.healthhub.sg",
+                                        phone: "Multiple locations",
+                                        address: "All SingHealth Polyclinics",
+                                        hours: "Varies by location",
+                                        cost: "$15.60 - $26.40 per visit"
+                                    }
+                                ]
+                            },
+                            general_doctors: {
+                                title: "General Doctors",
+                                icon: "👨‍⚕️",
+                                services: [
+                                    {
+                                        name: "SingHealth Polyclinics",
+                                        description: "Primary healthcare and family medicine",
+                                        website: "https://www.singhealth.com.sg/polyclinics",
+                                        phone: "6643-6969",
+                                        appointment: "https://www.healthhub.sg/myhealth/medical/appointment",
+                                        address: "21 locations island-wide",
+                                        hours: "Mon-Fri 8:00AM-12:30PM, 2:00PM-4:30PM",
+                                        cost: "$10.50 (Citizens), $35 (Others)"
+                                    },
+                                    {
+                                        name: "24-Hour Clinics",
+                                        description: "Round-the-clock medical care",
+                                        website: "https://www.healthhub.sg",
+                                        phone: "Varies by clinic",
+                                        address: "Raffles Hospital, Mount Elizabeth, etc.",
+                                        hours: "24/7",
+                                        cost: "$150-300 per consultation"
+                                    }
+                                ]
+                            },
+                            pharmacy: {
+                                title: "Pharmacy",
+                                icon: "💊",
+                                services: [
+                                    {
+                                        name: "Guardian Pharmacy",
+                                        description: "Prescription and over-counter medications",
+                                        website: "https://www.guardian.com.sg",
+                                        phone: "6338-6628",
+                                        address: "150+ outlets island-wide",
+                                        hours: "Varies by outlet (many 24/7)",
+                                        cost: "Competitive prices, member discounts"
+                                    },
+                                    {
+                                        name: "Watson's Pharmacy",
+                                        description: "Health and wellness products",
+                                        website: "https://www.watsons.com.sg",
+                                        phone: "Multiple outlets",
+                                        address: "100+ locations",
+                                        hours: "Usually 10AM-10PM",
+                                        cost: "Regular promotions available"
+                                    }
+                                ]
+                            }
+                        }
+                    },
+                    housing: {
+                        title: "Housing & Accommodation",
+                        icon: "🏠",
+                        subcategories: {
+                            hdb_rental: {
+                                title: "HDB Rental",
+                                icon: "🏘️",
+                                services: [
+                                    {
+                                        name: "HDB Rental Application",
+                                        description: "Subsidized public housing rental",
+                                        website: "https://www.hdb.gov.sg/residential/renting-a-flat",
+                                        phone: "1800-225-5432",
+                                        address: "HDB Hub, 480 Lorong 6 Toa Payoh",
+                                        hours: "Mon-Fri 8:30AM-5:00PM",
+                                        cost: "From S$26/month (income-dependent)",
+                                        eligibility: "Singapore Citizens/PR with low income"
+                                    }
+                                ]
+                            },
+                            shared_accommodation: {
+                                title: "Shared Housing",
+                                icon: "🏡",
+                                services: [
+                                    {
+                                        name: "PropertyGuru Room Rental",
+                                        description: "Find shared rooms and apartments",
+                                        website: "https://www.propertyguru.com.sg/property-for-rent",
+                                        phone: "6505-0000",
+                                        cost: "$300-800/month",
+                                        features: "Verified listings, multiple options"
+                                    }
+                                ]
+                            }
+                        }
+                    },
+                    groceries: {
+                        title: "Groceries & Food",
+                        icon: "🛒",
+                        subcategories: {
+                            supermarkets: {
+                                title: "Affordable Supermarkets",
+                                icon: "🏪",
+                                services: [
+                                    {
+                                        name: "FairPrice Supermarket",
+                                        description: "Budget-friendly groceries and household items",
+                                        website: "https://www.fairprice.com.sg",
+                                        phone: "6380-5858",
+                                        address: "300+ outlets nationwide",
+                                        hours: "Usually 8:00AM-10:00PM",
+                                        features: "LinkPoints rewards, bulk discounts"
+                                    },
+                                    {
+                                        name: "Sheng Siong",
+                                        description: "Local supermarket chain with competitive prices",
+                                        website: "https://corporate.shengsiong.com.sg",
+                                        phone: "6741-8188",
+                                        address: "60+ outlets",
+                                        hours: "7:00AM-11:00PM",
+                                        features: "Fresh produce, house brands"
+                                    }
+                                ]
+                            },
+                            food_assistance: {
+                                title: "Food Assistance",
+                                icon: "🍽️",
+                                services: [
+                                    {
+                                        name: "Food Bank Singapore",
+                                        description: "Free food distribution for low-income families",
+                                        website: "https://www.foodbank.sg",
+                                        phone: "6636-1785",
+                                        address: "1 Kaki Bukit Road 1, #01-33",
+                                        hours: "Mon-Fri 9:00AM-6:00PM",
+                                        cost: "Free (eligibility required)",
+                                        eligibility: "Household income ≤ $1,900"
+                                    }
+                                ]
+                            }
+                        }
+                    },
+                    legal: {
+                        title: "Legal Aid",
+                        icon: "⚖️",
+                        subcategories: {
+                            legal_advice: {
+                                title: "Free Legal Advice",
+                                icon: "📋",
+                                services: [
+                                    {
+                                        name: "Legal Aid Bureau",
+                                        description: "Free legal assistance for qualifying cases",
+                                        website: "https://lab.mlaw.gov.sg",
+                                        phone: "6536-0650",
+                                        address: "45 Maxwell Road #07-11",
+                                        hours: "Mon-Fri 8:30AM-5:00PM",
+                                        cost: "Free (means test applies)",
+                                        services_offered: "Civil, family, criminal matters"
+                                    }
+                                ]
+                            }
+                        }
+                    },
+                    social: {
+                        title: "Social Life & Community",
+                        icon: "👥",
+                        subcategories: {
+                            community_centers: {
+                                title: "Community Centers",
+                                icon: "🏢",
+                                services: [
+                                    {
+                                        name: "People's Association Community Centres",
+                                        description: "Local community activities and programs",
+                                        website: "https://www.pa.gov.sg",
+                                        phone: "6225-5322",
+                                        address: "100+ centers island-wide",
+                                        hours: "Varies by center",
+                                        activities: "Sports, classes, events, networking"
+                                    }
+                                ]
+                            }
+                        }
+                    },
+                    financial: {
+                        title: "Financial Services",
+                        icon: "💰",
+                        subcategories: {
+                            banking: {
+                                title: "Banking Services",
+                                icon: "🏦",
+                                services: [
+                                    {
+                                        name: "POSB/DBS Bank",
+                                        description: "Basic banking services for foreign workers",
+                                        website: "https://www.posb.com.sg",
+                                        phone: "1800-339-6963",
+                                        address: "200+ branches and ATMs",
+                                        hours: "Mon-Fri 9:30AM-4:30PM",
+                                        services_offered: "Savings accounts, remittance"
+                                    }
+                                ]
+                            }
+                        }
+                    },
+                    emergency: {
+                        title: "Emergency Services",
+                        icon: "🚨",
+                        subcategories: {
+                            emergency_contacts: {
+                                title: "Emergency Contacts",
+                                icon: "📞",
+                                services: [
+                                    {
+                                        name: "Emergency Hotlines",
+                                        description: "Critical emergency contact numbers",
+                                        police: "999",
+                                        ambulance: "995",
+                                        fire: "995",
+                                        non_emergency_police: "1800-255-0000",
+                                        cost: "Free"
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                };
+
+                this.init();
+            }
+
+            init() {
+                this.bindEvents();
+                this.updateLanguage();
+                this.startConversation();
+            }
+
+            bindEvents() {
+                document.getElementById('sendButton').addEventListener('click', () => {
+                    this.sendMessage();
+                });
+
+                document.getElementById('chatInput').addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') {
+                        this.sendMessage();
+                    }
+                });
+            }
+
+            updateLanguage() {
+                const lang = this.translations[this.currentLanguage];
+                document.getElementById('headerTitle').textContent = lang.headerTitle;
+                document.getElementById('headerSubtitle').textContent = lang.headerSubtitle;
+                document.getElementById('chatInput').placeholder = lang.inputPlaceholder;
+                
+                const welcomeMsg = document.getElementById('welcomeMessage');
+                if (welcomeMsg) {
+                    welcomeMsg.textContent = lang.welcomeMessage;
+                }
+            }
+
+            startConversation() {
+                setTimeout(() => {
+                    this.askForLanguage();
+                }, 1000);
+            }
+
+            askForLanguage() {
+                const lang = this.translations[this.currentLanguage];
+                this.addBotMessage(lang.languageQuestion);
+                this.showLanguageOptions();
+                this.conversationState = 'language';
+            }
+
+            showLanguageOptions() {
+                const quickOptions = document.getElementById('quickOptions');
+                quickOptions.innerHTML = '';
+                
+                const languages = [
+                    { code: 'en', name: '🇬🇧 English' },
+                    { code: 'zh', name: '🇨🇳 中文' },
+                    { code: 'ta', name: '🇮🇳 தமிழ்' },
+                    { code: 'hi', name: '🇮🇳 हिंदी' },
+                    { code: 'bn', name: '🇧🇩 বাংলা' },
+                    { code: 'id', name: '🇮🇩 Bahasa' }
+                ];
+
+                languages.forEach(lang => {
+                    const button = document.createElement('button');
+                    button.className = 'quick-option language-option';
+                    button.textContent = lang.name;
+                    button.onclick = () => this.selectLanguage(lang.code);
+                    quickOptions.appendChild(button);
+                });
+            }
+
+            selectLanguage(langCode) {
+                this.currentLanguage = langCode;
+                this.updateLanguage();
+                document.getElementById('quickOptions').innerHTML = '';
+                this.addUserMessage(this.translations[langCode].headerTitle);
+                
+                this.showTypingIndicator();
+                setTimeout(() => {
+                    this.askForName();
+                }, 1000);
+            }
+
+            askForName() {
+                const lang = this.translations[this.currentLanguage];
+                this.addBotMessage(lang.nameQuestion);
+                this.conversationState = 'name';
+            }
+
+            sendMessage() {
+                const input = document.getElementById('chatInput');
+                const message = input.value.trim();
+                
+                if (!message) return;
+
+                this.addUserMessage(message);
+                input.value = '';
+
+                this.showTypingIndicator();
+                
+                setTimeout(() => {
+                    this.processUserInput(message);
+                }, 1000);
+            }
+
+            addUserMessage(message) {
+                const chatMessages = document.getElementById('chatMessages');
+                const messageDiv = document.createElement('div');
+                messageDiv.className = 'message user-message';
+                messageDiv.innerHTML = `<div class="user-text">${message}</div>`;
+                chatMessages.appendChild(messageDiv);
+                this.scrollToBottom();
+            }
+
+            addBotMessage(message, showOptions = false) {
+                this.hideTypingIndicator();
+                
+                const chatMessages = document.getElementById('chatMessages');
+                const messageDiv = document.createElement('div');
+                messageDiv.className = 'message bot-message';
+                messageDiv.innerHTML = `
+                    <div class="bot-avatar">🤖</div>
+                    <div class="bot-text">${message}</div>
+                `;
+                chatMessages.appendChild(messageDiv);
+                
+                if (showOptions) {
+                    this.showServiceOptions();
+                }
+                
+                this.scrollToBottom();
+            }
+
+            showTypingIndicator() {
+                document.getElementById('typingIndicator').style.display = 'flex';
+                this.scrollToBottom();
+            }
+
+            hideTypingIndicator() {
+                document.getElementById('typingIndicator').style.display = 'none';
+            }
+
+            processUserInput(message) {
+                const lang = this.translations[this.currentLanguage];
+                
+                switch (this.conversationState) {
+                    case 'name':
+                        this.userProfile.name = message;
+                        this.addBotMessage(`Nice to meet you, ${message}! ${lang.nationalityQuestion}`);
+                        this.conversationState = 'nationality';
+                        break;
+                        
+                    case 'nationality':
+                        this.userProfile.nationality = message;
+                        this.addBotMessage(lang.workTypeQuestion);
+                        this.conversationState = 'workType';
+                        break;
+                        
+                    case 'workType':
+                        this.userProfile.workType = message;
+                        this.addBotMessage(lang.budgetQuestion);
+                        this.conversationState = 'budget';
+                        break;
+                        
+                    case 'budget':
+                        this.userProfile.budget = message;
+                        this.addBotMessage(`Thank you for the information! ${lang.servicesQuestion}`, true);
+                        this.conversationState = 'services';
+                        break;
+                        
+                    default:
+                        this.handleServiceQuery(message);
+                        break;
+                }
+            }
+
+            showServiceOptions() {
+                const lang = this.translations[this.currentLanguage];
+                const quickOptions = document.getElementById('quickOptions');
+                quickOptions.innerHTML = '';
+                
+                const options = [
+                    { key: 'healthcare', text: lang.healthcareOption },
+                    { key: 'housing', text: lang.housingOption },
+                    { key: 'groceries', text: lang.groceriesOption },
+                    { key: 'legal', text: lang.legalOption },
+                    { key: 'social', text: lang.socialOption },
+                    { key: 'financial', text: lang.financialOption },
+                    { key: 'emergency', text: lang.emergencyOption },
+                    { key: 'language', text: lang.changeLanguage }
+                ];
+
+                options.forEach(option => {
+                    const button = document.createElement('button');
+                    button.className = option.key === 'language' ? 'quick-option language-option' : 'quick-option';
+                    button.textContent = option.text;
+                    button.onclick = () => {
+                        if (option.key === 'language') {
+                            this.showLanguageSelection();
+                        } else {
+                            this.selectService(option.key);
+                        }
+                    };
+                    quickOptions.appendChild(button);
+                });
+            }
+
+            showLanguageSelection() {
+                document.getElementById('quickOptions').innerHTML = '';
+                this.addUserMessage(this.translations[this.currentLanguage].changeLanguage);
+                this.showTypingIndicator();
+                setTimeout(() => {
+                    this.addBotMessage(this.translations[this.currentLanguage].languageQuestion);
+                    this.showLanguageOptions();
+                }, 500);
+            }
+
+            selectService(serviceKey) {
+                document.getElementById('quickOptions').innerHTML = '';
+                this.addUserMessage(this.translations[this.currentLanguage][serviceKey + 'Option']);
+                this.currentCategory = serviceKey;
+                
+                this.showTypingIndicator();
+                setTimeout(() => {
+                    this.showSubcategories(serviceKey);
+                }, 1000);
+            }
+
+            showSubcategories(serviceKey) {
+                const service = this.serviceDatabase[serviceKey];
+                if (!service || !service.subcategories) {
+                    this.addBotMessage("I'm sorry, I don't have information about that service yet.");
+                    return;
+                }
+
+                let response = `Here are the ${service.title.toLowerCase()} categories I can help you with:\n\n`;
+                this.addBotMessage(response);
+
+                const quickOptions = document.getElementById('quickOptions');
+                quickOptions.innerHTML = '';
+
+                // Add subcategory buttons
+                Object.keys(service.subcategories).forEach(subKey => {
+                    const subcategory = service.subcategories[subKey];
+                    const button = document.createElement('div');
+                    button.className = 'subcategory-card';
+                    button.innerHTML = `
+                        <div class="subcategory-title">${subcategory.icon} ${subcategory.title}</div>
+                        <div class="subcategory-desc">Click to view services</div>
+                    `;
+                    button.onclick = () => this.showServiceDetails(serviceKey, subKey);
+                    quickOptions.appendChild(button);
+                });
+
+                // Add back button
+                const backButton = document.createElement('button');
+                backButton.className = 'back-button';
+                backButton.textContent = this.translations[this.currentLanguage].backToServices;
+                backButton.onclick = () => {
+                    this.addUserMessage(this.translations[this.currentLanguage].backToServices);
+                    this.showTypingIndicator();
+                    setTimeout(() => {
+                        this.addBotMessage(this.translations[this.currentLanguage].servicesQuestion, true);
+                    }, 500);
+                };
+                quickOptions.appendChild(backButton);
+            }
+
+            showServiceDetails(serviceKey, subcategoryKey) {
+                const subcategory = this.serviceDatabase[serviceKey].subcategories[subcategoryKey];
+                this.addUserMessage(`${subcategory.icon} ${subcategory.title}`);
+                
+                document.getElementById('quickOptions').innerHTML = '';
+                this.showTypingIndicator();
+
+                setTimeout(() => {
+                    this.displayServiceCards(subcategory);
+                    this.showBackToSubcategoriesButton(serviceKey);
+                }, 1000);
+            }
+
+            displayServiceCards(subcategory) {
+                let response = `Here are the ${subcategory.title.toLowerCase()} services available:\n\n`;
+                this.addBotMessage(response);
+
+                const chatMessages = document.getElementById('chatMessages');
+                
+                subcategory.services.forEach(service => {
+                    const serviceCard = document.createElement('div');
+                    serviceCard.className = 'message bot-message';
+                    
+                    let contactHTML = '';
+                    if (service.phone) contactHTML += `<div class="contact-item"><span class="contact-icon">📞</span><strong>Phone:</strong> ${service.phone}</div>`;
+                    if (service.website) contactHTML += `<div class="contact-item"><span class="contact-icon">🌐</span><strong>Website:</strong> <a href="${service.website}" target="_blank">${service.website}</a></div>`;
+                    if (service.appointment) contactHTML += `<div class="contact-item"><span class="contact-icon">📅</span><strong>Appointments:</strong> <a href="${service.appointment}" target="_blank">Book Online</a></div>`;
+                    if (service.email) contactHTML += `<div class="contact-item"><span class="contact-icon">✉️</span><strong>Email:</strong> ${service.email}</div>`;
+                    if (service.address) contactHTML += `<div class="contact-item"><span class="contact-icon">📍</span><strong>Address:</strong> ${service.address}</div>`;
+                    if (service.hours) contactHTML += `<div class="contact-item"><span class="contact-icon">🕐</span><strong>Hours:</strong> ${service.hours}</div>`;
+                    if (service.cost) contactHTML += `<div class="contact-item"><span class="contact-icon">💰</span><strong>Cost:</strong> ${service.cost}</div>`;
+                    if (service.eligibility) contactHTML += `<div class="contact-item"><span class="contact-icon">✅</span><strong>Eligibility:</strong> ${service.eligibility}</div>`;
+                    if (service.features) contactHTML += `<div class="contact-item"><span class="contact-icon">⭐</span><strong>Features:</strong> ${service.features}</div>`;
+                    if (service.services_offered) contactHTML += `<div class="contact-item"><span class="contact-icon">🏥</span><strong>Services:</strong> ${service.services_offered}</div>`;
+                    if (service.activities) contactHTML += `<div class="contact-item"><span class="contact-icon">🎯</span><strong>Activities:</strong> ${service.activities}</div>`;
+                    
+                    // Special handling for emergency services
+                    if (service.police) contactHTML += `<div class="contact-item"><span class="contact-icon">🚔</span><strong>Police:</strong> ${service.police}</div>`;
+                    if (service.ambulance) contactHTML += `<div class="contact-item"><span class="contact-icon">🚑</span><strong>Ambulance:</strong> ${service.ambulance}</div>`;
+                    if (service.fire) contactHTML += `<div class="contact-item"><span class="contact-icon">🚒</span><strong>Fire:</strong> ${service.fire}</div>`;
+                    if (service.emergency) contactHTML += `<div class="contact-item"><span class="contact-icon">🆘</span><strong>Emergency:</strong> ${service.emergency}</div>`;
+                    if (service.non_emergency_police) contactHTML += `<div class="contact-item"><span class="contact-icon">📞</span><strong>Non-Emergency Police:</strong> ${service.non_emergency_police}</div>`;
+
+                    serviceCard.innerHTML = `
+                        <div class="bot-avatar">🤖</div>
+                        <div class="bot-text">
+                            <div class="service-card">
+                                <div class="service-header">
+                                    <span class="service-icon">${subcategory.icon}</span>
+                                    <span class="service-title">${service.name}</span>
+                                </div>
+                                <div class="service-details">${service.description}</div>
+                                <div class="contact-info">
+                                    ${contactHTML}
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    
+                    chatMessages.appendChild(serviceCard);
+                });
+
+                this.scrollToBottom();
+            }
+
+            showBackToSubcategoriesButton(serviceKey) {
+                const quickOptions = document.getElementById('quickOptions');
+                
+                const backButton = document.createElement('button');
+                backButton.className = 'back-button';
+                backButton.textContent = `← Back to ${this.serviceDatabase[serviceKey].title}`;
+                backButton.onclick = () => {
+                    this.addUserMessage(`← Back to ${this.serviceDatabase[serviceKey].title}`);
+                    this.showTypingIndicator();
+                    setTimeout(() => {
+                        this.showSubcategories(serviceKey);
+                    }, 500);
+                };
+                quickOptions.appendChild(backButton);
+
+                const servicesButton = document.createElement('button');
+                servicesButton.className = 'back-button';
+                servicesButton.textContent = this.translations[this.currentLanguage].backToServices;
+                servicesButton.onclick = () => {
+                    this.addUserMessage(this.translations[this.currentLanguage].backToServices);
+                    this.showTypingIndicator();
+                    setTimeout(() => {
+                        this.addBotMessage(this.translations[this.currentLanguage].servicesQuestion, true);
+                    }, 500);
+                };
+                quickOptions.appendChild(servicesButton);
+            }
+
+            handleServiceQuery(message) {
+                // Simple keyword matching for service queries
+                const lowerMessage = message.toLowerCase();
+                
+                if (lowerMessage.includes('health') || lowerMessage.includes('doctor') || lowerMessage.includes('medical')) {
+                    this.selectService('healthcare');
+                } else if (lowerMessage.includes('house') || lowerMessage.includes('room') || lowerMessage.includes('rent')) {
+                    this.selectService('housing');
+                } else if (lowerMessage.includes('food') || lowerMessage.includes('grocery') || lowerMessage.includes('eat')) {
+                    this.selectService('groceries');
+                } else if (lowerMessage.includes('legal') || lowerMessage.includes('law') || lowerMessage.includes('help')) {
+                    this.selectService('legal');
+                } else if (lowerMessage.includes('social') || lowerMessage.includes('community') || lowerMessage.includes('friend')) {
+                    this.selectService('social');
+                } else if (lowerMessage.includes('money') || lowerMessage.includes('bank') || lowerMessage.includes('financial')) {
+                    this.selectService('financial');
+                } else if (lowerMessage.includes('emergency') || lowerMessage.includes('urgent') || lowerMessage.includes('help')) {
+                    this.selectService('emergency');
+                } else {
+                    this.addBotMessage("I understand you need help. Let me show you the services I can assist with:", true);
+                }
+            }
+
+            scrollToBottom() {
+                const chatMessages = document.getElementById('chatMessages');
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            }
+        }
+
+        // Initialize the chatbot when the page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            new MigrantWorkerChatbot();
+        });
+    </script>
+</body>
+</html>
