@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Aid for Migrant Workers</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+        }
+
+        /* Header Styles */
+        .header {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+            padding: 1rem 0;
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+            color: #333;
+        }
+
+        .logo img {
+            width: 50px;
+            height: 50px;
+        }
+
+        .logo-icon {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #e74c3c, #f39c12);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .logo-icon::before {
+            content: '🏠';
+            font-size: 24px;
+        }
+
+        .logo-text {
+            font-size: 14px;
+            font-weight: bold;
+            text-transform: uppercase;
+            line-height: 1.2;
+        }
+
+        .nav-menu {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+            list-style: none;
+        }
+
+        .nav-menu a {
+            text-decoration: none;
+            color: #333;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        .nav-menu a:hover {
+            color: #4A90E2;
+        }
+
+        .donate-btn {
+            background: #4A90E2;
+            color: white;
+            padding: 0.7rem 1.5rem;
+            border-radius: 5px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: background 0.3s;
+        }
+
+        .donate-btn:hover {
+            background: #357ABD;
+        }
+
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(rgba(74, 58, 56, 0.7), rgba(74, 58, 56, 0.7)), url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800"><rect fill="%234A3A38" width="1200" height="800"/></svg>');
+            background-size: cover;
+            background-position: center;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            color: white;
+            position: relative;
+            margin-top: 80px;
+        }
+
+        .hero-content {
+            max-width: 900px;
+            padding: 2rem;
+            z-index: 2;
+        }
+
+        .hero-content p {
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+        }
+
+        .hero-content h1 {
+            font-size: 4rem;
+            margin-bottom: 2rem;
+            font-weight: 700;
+        }
+
+        .chat-btn, .cta-btn {
+            background: #4A90E2;
+            color: white;
+            padding: 1rem 2.5rem;
+            border-radius: 5px;
+            text-decoration: none;
+            font-weight: 600;
+            display: inline-block;
+            transition: all 0.3s;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+
+        .chat-btn:hover, .cta-btn:hover {
+            background: #357ABD;
+            transform: translateY(-2px);
+        }
+
+        /* Guidebook Section */
+        .guidebook-section {
+            background: #F8F9FA;
+            padding: 5rem 0;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            align-items: center;
+            gap: 4rem;
+        }
+
+        .guidebook-content {
+            flex: 1;
+        }
+
+        .guidebook-content p {
+            font-size: 1.1rem;
+            color: #666;
+            line-height: 1.8;
+            margin-bottom: 2rem;
+        }
+
+        /* Services Section */
+        .services-section {
+            padding: 5rem 0;
+            background: white;
+        }
+
+        .services-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+
+        .section-header h2 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            color: #333;
+        }
+
+        .section-header p {
+            font-size: 1.3rem;
+            color: #666;
+        }
+
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 3rem;
+            margin-bottom: 2rem;
+        }
+
+        .service-card {
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .service-icon {
+            width: 150px;
+            height: 150px;
+            margin: 0 auto 1.5rem;
+            background: #F8F9FA;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 4rem;
+        }
+
+        .service-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: #333;
+        }
+
+        .service-card p {
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 1.5rem;
+        }
+
+        .service-btn {
+            background: #4A90E2;
+            color: white;
+            padding: 0.7rem 1.5rem;
+            border-radius: 5px;
+            text-decoration: none;
+            font-weight: 600;
+            display: inline-block;
+            transition: all 0.3s;
+        }
+
+        .service-btn:hover {
+            background: #357ABD;
+            transform: translateY(-2px);
+        }
+
+        /* Chatbot Section */
+        .chatbot-section {
+            background: linear-gradient(135deg, #5D4037, #3E2723);
+            padding: 5rem 0;
+            color: white;
+        }
+
+        .chatbot-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            align-items: center;
+            gap: 4rem;
+        }
+
+        .chatbot-image {
+            flex: 1;
+            text-align: center;
+        }
+
+        .chatbot-image svg {
+            width: 100%;
+            max-width: 400px;
+            height: auto;
+        }
+
+        .chatbot-content {
+            flex: 1;
+        }
+
+        .chatbot-content h2 {
+            font-size: 2.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .chatbot-content p {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+        }
+
+        /* About Section */
+        .about-section {
+            padding: 5rem 0;
+            background: #F8F9FA;
+        }
+
+        .about-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            align-items: center;
+            gap: 4rem;
+        }
+
+        .about-image {
+            flex: 1;
+        }
+
+        .about-image img {
+            width: 100%;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .about-content {
+            flex: 1;
+        }
+
+        .about-content h2 {
+            font-size: 2.5rem;
+            margin-bottom: 1.5rem;
+            color: #333;
+        }
+
+        .about-content p {
+            font-size: 1.1rem;
+            color: #666;
+            line-height: 1.8;
+            margin-bottom: 2rem;
+        }
+
+        /* Footer */
+        .footer {
+            background: #333;
+            color: white;
+            padding: 3rem 0 2rem;
+            text-align: center;
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .footer-links {
+            margin-bottom: 2rem;
+        }
+
+        .footer-links a {
+            color: white;
+            text-decoration: none;
+            margin: 0 1rem;
+        }
+
+        .footer-links a:hover {
+            text-decoration: underline;
+        }
+
+        .footer-bottom {
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 1px solid #555;
+        }
+
+        .chat-float-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: #4A90E2;
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 600;
+            box-shadow: 0 5px 20px rgba(74, 144, 226, 0.3);
+            transition: all 0.3s;
+            z-index: 999;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .chat-float-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(74, 144, 226, 0.4);
+        }
+
+        .back-to-top {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: #4A90E2;
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            font-size: 1.5rem;
+            box-shadow: 0 5px 20px rgba(74, 144, 226, 0.3);
+            transition: all 0.3s;
+            z-index: 998;
+        }
+
+        .back-to-top:hover {
+            transform: translateY(-3px);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .nav-menu {
+                display: none;
+            }
+
+            .hero-content h1 {
+                font-size: 2.5rem;
+            }
+
+            .container, .chatbot-container, .about-container {
+                flex-direction: column;
+                gap: 2rem;
+            }
+
+            .services-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <nav class="nav-container">
+            <a href="#" class="logo">
+                <div class="logo-icon"></div>
+                <div class="logo-text">OPEN DOOR<br>HELP AWAY FROM HOME</div>
+            </a>
+            <ul class="nav-menu">
+                <li><a href="#home">Home</a></li>
+                <li><a href="#about">About</a></li>
+                <li><a href="#chatbot">ChatBot</a></li>
+                <li><a href="#guidebook">Community</a></li>
+                <li><a href="#footer">Contact Us</a></li>
+                <li><a href="#donate" class="donate-btn">DONATE</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero" id="home">
+        <div class="hero-content">
+            <p>Connect with our AI assistant for quick answers, reliable support, and valuable resources</p>
+            <h1>AI aid for Migrant Workers</h1>
+            <a href="#chatbot" class="chat-btn">💬 CHAT NOW</a>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section class="about-section" id="about">
+        <div class="about-container">
+            <div class="about-image">
+                <img src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 600 400'><rect fill='%23E8E8E8' width='600' height='400'/><text x='50%' y='50%' text-anchor='middle' dy='.3em' fill='%23999' font-family='Arial' font-size='20'>Migrant Workers Image</text></svg>" alt="Migrant Workers">
+            </div>
+            <div class="about-content">
+                <h2>About Us</h2>
+                <p>AI aid for Migrant Workers offers help to those struggling in their daily lives with the resources they need to live a happy life. Our platform connects all migrant workers based in Singapore with essential services that accommodates their costs. We offer this help in various languages to help these workers. We aim to provide quick, easy and reliable solutions to those that encounter challenges on a day to day bases.</p>
+                <a href="#" class="service-btn">MORE ABOUT US →</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Chatbot Section -->
+    <section class="chatbot-section" id="chatbot">
+        <div class="chatbot-container">
+            <div class="chatbot-image">
+                <svg viewBox="0 0 400 500" xmlns="http://www.w3.org/2000/svg">
+                    <!-- Phone -->
+                    <rect x="100" y="50" width="200" height="350" rx="20" fill="#2C3E50" stroke="#34495E" stroke-width="3"/>
+                    <rect x="110" y="70" width="180" height="310" rx="10" fill="#3498DB"/>
+                    
+                    <!-- Phone screen elements -->
+                    <circle cx="200" cy="130" r="25" fill="#F39C12"/>
+                    <path d="M185 125 L200 115 L200 145 M195 120 L205 120 M195 140 L205 140" stroke="#2C3E50" stroke-width="3" fill="none"/>
+                    
+                    <!-- Chat messages -->
+                    <rect x="130" y="180" width="140" height="30" rx="15" fill="#ECF0F1"/>
+                    <rect x="130" y="220" width="120" height="30" rx="15" fill="#ECF0F1"/>
+                    <rect x="150" y="260" width="120" height="30" rx="15" fill="#34495E"/>
+                    
+                    <!-- Robot -->
+                    <ellipse cx="80" cy="350" rx="40" ry="50" fill="#BDC3C7"/>
+                    <rect x="60" y="330" width="40" height="40" rx="10" fill="#95A5A6"/>
+                    <circle cx="70" cy="345" r="5" fill="#2C3E50"/>
+                    <circle cx="90" cy="345" r="5" fill="#2C3E50"/>
+                    <path d="M60 320 Q80 310 100 320" stroke="#95A5A6" stroke-width="3" fill="none"/>
+                    <rect x="70" y="370" width="20" height="30" fill="#95A5A6"/>
+                    <path d="M95 360 Q120 350 130 370" stroke="#95A5A6" stroke-width="3" fill="none"/>
+                </svg>
+            </div>
+            <div class="chatbot-content">
+                <h2>Explore The Chatbot</h2>
+                <p>Get personalized answers and guidance on budget living in Singapore through our conversational AI chatbot.</p>
+                <a href="#" class="cta-btn">CHATBOT →</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Services Section -->
+    <section class="services-section" id="services">
+        <div class="services-container">
+            <div class="section-header">
+                <h2>What we offer</h2>
+                <p>Discover How We Can Help You Make a Difference</p>
+            </div>
+            <div class="services-grid">
+                <div class="service-card">
+                    <div class="service-icon">👨‍👩‍👧‍👦</div>
+                    <h3>Community</h3>
+                    <p>Join our community on Telegram/WhatsApp to connect with like-minded individuals, stay updated on sustainable living tips and build a circle.</p>
+                    <a href="#" class="service-btn">JOIN →</a>
+                </div>
+                <div class="service-card">
+                    <div class="service-icon">📱</div>
+                    <h3>Online Services</h3>
+                    <p>Explore the wide range of online cost-effective services in Singapore designed to cater to your needs with ease and efficiency.</p>
+                    <a href="#" class="service-btn">READ MORE →</a>
+                </div>
+                <div class="service-card">
+                    <div class="service-icon">🏪</div>
+                    <h3>Offline Services</h3>
+                    <p>Experience a broad range of cost-effective offline services tailored to meet your specific needs with professionalism, reliability, and care.</p>
+                    <a href="#" class="service-btn">READ MORE →</a>
+                </div>
+                <div class="service-card">
+                    <div class="service-icon">🤖</div>
+                    <h3>Chatbot</h3>
+                    <p>Get personalised answers and expert guidance on sustainable living through our conversational AI chatbot</p>
+                    <a href="#" class="chat-btn">💬 CHAT NOW</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Guidebook Section -->
+    <section class="guidebook-section" id="guidebook">
+        <div class="container">
+            <div class="guidebook-content">
+                <p>Download our comprehensive PDF guidebook for practical tips on pocket-friendly living. Explore our chatbot for personalized advice on budgeting, saving, and affordable lifestyle choices. Start your journey to smarter and sustainable living today!</p>
+                <a href="#" class="cta-btn">DOWNLOAD GUIDEBOOK</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer" id="footer">
+        <div class="footer-content">
+            <div class="footer-links">
+                <a href="#about">About Us</a> |
+                <a href="mailto:mighelp.connect@gmail.com">Email: mighelp.connect@gmail.com</a>
+            </div>
+            <a href="#" class="chat-btn" style="display: inline-block; margin: 1rem 0;">💬 CHAT NOW</a>
+            <div class="footer-bottom">
+                <p>Copyright © 2025 MigHelp</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Floating Chat Button -->
+    <a href="#" class="chat-float-btn">💬 CHAT NOW</a>
+
+    <!-- Back to Top -->
+    <a href="#home" class="back-to-top">↑</a>
+
+    <script>
+        // Smooth scrolling
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Show/hide back to top button
+        window.addEventListener('scroll', () => {
+            const backToTop = document.querySelector('.back-to-top');
+            if (window.scrollY > 300) {
+                backToTop.style.display = 'flex';
+            } else {
+                backToTop.style.display = 'none';
+            }
+        });
+    </script>
+</body>
+</html>
