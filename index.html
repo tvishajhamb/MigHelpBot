@@ -49,22 +49,8 @@
         .logo img {
             width: 50px;
             height: 50px;
-        }
-
-        .logo-icon {
-            width: 50px;
-            height: 50px;
-            background: linear-gradient(135deg, #e74c3c, #f39c12);
             border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-        }
-
-        .logo-icon::before {
-            content: '🏠';
-            font-size: 24px;
+            object-fit: cover;
         }
 
         .logo-text {
@@ -90,20 +76,6 @@
 
         .nav-menu a:hover {
             color: #4A90E2;
-        }
-
-        .donate-btn {
-            background: #4A90E2;
-            color: white;
-            padding: 0.7rem 1.5rem;
-            border-radius: 5px;
-            text-decoration: none;
-            font-weight: 600;
-            transition: background 0.3s;
-        }
-
-        .donate-btn:hover {
-            background: #357ABD;
         }
 
         /* Hero Section */
@@ -266,9 +238,24 @@
 
         /* Chatbot Section */
         .chatbot-section {
-            background: linear-gradient(135deg, #5D4037, #3E2723);
+            background: linear-gradient(rgba(93, 64, 55, 0.8), rgba(62, 39, 35, 0.8)), url('https://i.postimg.cc/5yfn2rHn/Black-Flatlay-Photo-Motivational-Finance-Quote-Facebook-Cover.png');
+            background-size: cover;
+            background-position: left;
+            background-attachment: fixed;
             padding: 5rem 0;
             color: white;
+            position: relative;
+        }
+
+        .chatbot-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(80, 70, 67, 0.5), rgba(62, 39, 35, 0.5));
+            z-index: 1;
         }
 
         .chatbot-container {
@@ -278,6 +265,8 @@
             display: flex;
             align-items: center;
             gap: 4rem;
+            position: relative;
+            z-index: 2;
         }
 
         .chatbot-image {
@@ -455,7 +444,7 @@
     <header class="header">
         <nav class="nav-container">
             <a href="#" class="logo">
-                <div class="logo-icon"></div>
+                <img src="https://i.postimg.cc/Bvg3vrbV/Screenshot-2025-08-22-at-16-48-52.png" alt="Open Door Logo">
                 <div class="logo-text">OPEN DOOR<br>HELP AWAY FROM HOME</div>
             </a>
             <ul class="nav-menu">
@@ -464,7 +453,6 @@
                 <li><a href="#chatbot">ChatBot</a></li>
                 <li><a href="#guidebook">Community</a></li>
                 <li><a href="#footer">Contact Us</a></li>
-                <li><a href="#donate" class="donate-btn">DONATE</a></li>
             </ul>
         </nav>
     </header>
@@ -482,12 +470,11 @@
     <section class="about-section" id="about">
         <div class="about-container">
             <div class="about-image">
-                <img url('https://i.postimg.cc/MHVFrBCj/Screenshot-2025-08-19-at-16-45-22.png') alt="Migrant Workers">
+                <img src="https://i.postimg.cc/MHVFrBCj/Screenshot-2025-08-19-at-16-45-22.png" alt="Migrant Workers">
             </div>
             <div class="about-content">
                 <h2>About Us</h2>
                 <p>AI aid for Migrant Workers offers help to those struggling in their daily lives with the resources they need to live a happy life. Our platform connects all migrant workers based in Singapore with essential services that accommodates their costs. We offer this help in various languages to help these workers. We aim to provide quick, easy and reliable solutions to those that encounter challenges on a day to day bases.</p>
-<!--                 <a href="#" class="service-btn">MORE ABOUT US →</a> -->
             </div>
         </div>
     </section>
@@ -547,7 +534,7 @@
         <div class="container">
             <div class="guidebook-content">
                 <p>Download our comprehensive PDF guidebook for practical tips on pocket-friendly living. Explore our chatbot for personalized advice on budgeting, saving, and affordable lifestyle choices. Start your journey to smarter and sustainable living today!</p>
-                <a href="#" class="cta-btn">DOWNLOAD GUIDEBOOK</a>
+                <a href="https://singapore-migrant-worker-services-guidebook.tiiny.site" class="cta-btn">DOWNLOAD GUIDEBOOK</a>
             </div>
         </div>
     </section>
